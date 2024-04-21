@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Registration</title>
+</head>
+<body>
+    <h2>User Registration Form</h2>
+    <form id="userForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        
+        <label for="userStatus">User Status:</label>
+        <input type="text" id="userStatus" name="userStatus" required><br><br>
+        
+        <label for="userType">User Type:</label>
+        <input type="text" id="userType" name="userType" required><br><br>
+        
+        <label for="joinDate">Join Date:</label>
+        <input type="date" id="joinDate" name="joinDate" required><br><br>
+        
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        document.getElementById('userForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const username = formData.get('username');
+            const password = formData.get('password');
+            const userStatus = formData.get('userStatus');
+            const userType = formData.get('userType');
+            const joinDate = formData.get('joinDate');
+
+            const response = await fetch('/registerUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password, userStatus, userType, joinDate })
+            });
+
+            if (response.ok) {
+                alert("User registered successfully!");
+                event.target.reset(); // Reset the form after successful registration
+            } else {
+                const errorData = await response.json();
+                console.error("Error registering user:", errorData.error);
+                alert("Error registering user: " + errorData.error);
+            }
+        });
+    </script>
+</body>
+</html>

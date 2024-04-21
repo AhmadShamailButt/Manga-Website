@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database Query</title>
+</head>
+<body>
+    <button id="executeQueryBtn">Execute Query</button>
+
+    <!-- Display query results here -->
+    <div id="queryResults"></div>
+
+    <script>
+        document.getElementById('executeQueryBtn').addEventListener('click', async () => {
+            const query = "SELECT * FROM [users]"; // Your SQL query
+            const response = await fetch('/executeQuery', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ sql: query })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("Query results:", result.rows);
+
+                // Display results on the HTML page
+                displayQueryResults(result.rows);
+                alert("Query executed successfully!");
+            } else {
+                const errorData = await response.json();
+                console.error("Error executing query:", errorData.error);
+                alert("Error executing query: " + errorData.error);
+            }
+        });
+
+        // Function to display query results on the HTML page
+        function displayQueryResults(rows) {
+            const resultsContainer = document.getElementById('queryResults');
+            resultsContainer.innerHTML = ''; // Clear previous results
+
+            if (rows.length === 0) {
+                resultsContainer.textContent = 'No results found.';
+            } else {
+                const table = document.createElement('table');
+                table.border = '1';
+
+                // Create table header row
+                const headerRow = table.insertRow();
+                Object.keys(rows[0]).forEach(key => {
+                    const headerCell = document.createElement('th');
+                    headerCell.textContent = key;
+                    headerRow.appendChild(headerCell);
+                });
+
+                // Create table body rows
+                rows.forEach(rowData => {
+                    const row = table.insertRow();
+                    Object.values(rowData).forEach(value => {
+                        const cell = row.insertCell();
+                        cell.textContent = value;
+                    });
+                });
+
+                // Append table to results container
+                resultsContainer.appendChild(table);
+            }
+        }
+    </script>
+</body>
+</html>

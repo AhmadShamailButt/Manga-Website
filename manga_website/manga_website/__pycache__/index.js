@@ -1,35 +1,65 @@
 const odbc = require('odbc');
 
-// Configuration for ODBC connection
-const config = {
-    connectionString: "Driver={SQL Server};Server=AHMAD-PC\\SQLEXPRESS;Database=manga;Trusted_Connection=yes;"
-};
-
-// Establishing connection to the database
-odbc.connect(config, function(err, connection) {
-    if (err) {
-        console.error(err);
-        return;
+class DatabaseManager {
+    constructor(connectionString) {
+        this.connectionString = connectionString;
     }
 
-    // SQL query to select all records from the 'users' table
-    const query = "SELECT * FROM [users]"; // Corrected: table name wrapped in square brackets
+    connect() {
+        return new Promise((resolve, reject) => {
+            odbc.connect(this.connectionString, (err, connection) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(connection);
+                }
+            });
+        });
+    }
 
-    // Executing the SQL query
-    connection.query(query, function(err, rows, moreResultSets) {
-        if (err) {
-            console.error(err);
-        } else {
-            console.log(rows);
-        }
-
-        // Closing the database connection when done
-        connection.close(function(err) {
-            if (err) {
-                console.error(err);
-            } else {
-                console.log("Connection closed.");
+    query(sql) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const connection = await this.connect();
+                connection.query(sql, (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(rows);
+                    }
+                    connection.close(); // Close the connection after query execution
+                });
+            } catch (error) {
+                reject(error);
             }
         });
-    });
-});
+    }
+
+    insertUser(username, password, userStatus, userType, joinDate) {
+        const sql = `INSERT INTO users (user_name, password, user_status, user_type, join_date) 
+                     VALUES (?, ?, ?, ?, ?)`;
+        const params = [username, password, userStatus, userType, joinDate];
+
+        return this.queryWithParams(sql, params);
+    }
+
+    queryWithParams(sql, params) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const connection = await this.connect();
+                connection.query(sql, params, (err, result) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve(result);
+                    }
+                    connection.close(); // Close the connection after query execution
+                });
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+}
+
+module.exports = DatabaseManager;
