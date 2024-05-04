@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Account</title>
+</head>
+<body>
+    <h1>Login Account</h1>
+    <form id="LoginAccountForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        
+        <button type="submit">Login</button>
+    </form>
+
+    <div id="responseMessage"></div>
+    <script>
+        document.getElementById("LoginAccountForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            try {
+                const formData = new FormData(this);
+                const UserName = formData.get("username");
+                const Password = formData.get("password");
+                
+                // Send request to server to login the user
+                const response = await fetch('/executeQuery', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({sql: `exec spLoginUser @Username='${UserName}', @Password='${Password}'`})
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to login user on server.');
+                }
+    
+                const responseData = await response.json();
+                console.log(responseData); // Log the response data for inspection
+    
+                if (responseData.success && responseData.rows.length > 0) {
+                    const status = responseData.rows[0].Status;
+    
+                    if (status === 'Login successful') {
+                        document.getElementById("responseMessage").innerText = 'Login successful.';
+                    } else {
+                        document.getElementById("responseMessage").innerText = 'Invalid username or password.';
+                    }
+                } else {
+                    throw new Error('Failed to login user on server.');
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById("responseMessage").innerText = error.message;
+            }
+        });
+    </script>
+            </body>
+</html>

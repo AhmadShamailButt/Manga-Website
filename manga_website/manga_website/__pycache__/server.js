@@ -1,41 +1,32 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const DatabaseExecuter = require('./index');
+const DatabaseManager = require('./script');
 
 const app = express();
 app.use(bodyParser.json());
 
-const connectionString = "Driver={SQL Server};Server=Ahmad-PC\\SQLEXPRESS;Database=manga;Trusted_Connection=yes;";
-const dbManager = new DatabaseExecuter(connectionString);
+const connectionString = "Driver={SQL Server};Server=AHMAD-PC\\SQLEXPRESS;Database=manga;Trusted_Connection=yes;";
+const dbManager = new DatabaseManager(connectionString);
 
-// Serve static files from the project directory
-app.use(express.static(__dirname));
-
-// Endpoint to search for an item
-app.post('/CheckUser', async (req, res) => {
-    const { UserName, Password } = req.body;
+// Endpoint to execute a query
+app.post('/executeQuery', async (req, res) => {
+    const { sql } = req.body;
 
     try {
-        const userDetails = await dbManager.CheckUser(UserName, Password); 
-        console.log(userDetails);
+        const rows = await dbManager.query(sql);
         
-        if (userDetails && userDetails.user_name) { // Check if userDetails is truthy and contains user_name
-            res.json({ success: true, message: "User Found", result: userDetails });
-        } else {
-            res.status(401).json({ success: false, message: "Invalid username or password" });
-        }
+        res.json({ success: true, rows });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 });
 
 
-
-
 // Serve the HTML form for user registration
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/search.html'); // Corrected file name
+    res.sendFile(__dirname + '/Login.html');
 });
+app.use(express.static('project'));
 
 // Start the server
 const PORT = process.env.PORT || 3000;
