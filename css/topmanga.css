@@ -1,0 +1,101 @@
+*{
+  margin: 100;
+  padding: 300;
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+
+
+body {
+  background-image: url('C:\Users\tower\OneDrive\Desktop\Fast-Nu\4th Semester\2. DBMS Lab\Project\Manga\manga-v2\src\img\street.jpg');
+}
+.blur-background {
+  position: fixed;  
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 550px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: -1; /* Ensure the blur background is behind the gallery */
+}
+.gallery {
+  width: 1400px;
+  height: auto; /* Allow height to adjust based on content */
+  display: flex;
+  overflow-x: scroll;
+  overflow-y: hidden; /* Hide vertical scrollbar */
+  scroll-behavior: smooth;
+}
+
+ 
+.gallery::-webkit-scrollbar{
+  display: none;
+}
+.gallery div{
+  width: 1400px;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto; 
+  grid-gap: 0px;
+  padding: 0px;
+  flex: none;
+}
+.gallery div img{
+  width: 300px;
+  filter: grayscale(100%);
+  transition: transform 0.5s;
+} 
+
+.gallery-wrap{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2% auto;
+  
+  z-index: var(100); /* Ensure the gallery is on top of the blur background */
+}
+.gallery div img:hover{
+  filter: grayscale(0);
+  cursor: pointer;
+  transform: scale(1.1);
+}
+
+#backBtn, #nextBtn{
+  width: 50px;
+  cursor: pointer;
+  margin: 5px;
+  margin-top: 400px;
+}
+
+.image-text {
+  display: flex;
+ 
+}
+
+.image-text img {
+  margin-right: 10px; /* Adjust the margin between image and text */
+}
+
+.image-text h1 {
+  height: 104px;
+
+}
+.image-text p1 {
+  position: relative; /* Set the position to relative */
+  top: 100px; /* Adjust the top position as needed */
+  left: -90px; /* Adjust the left position as needed */
+  align-items: center;
+}
+
+.image-text p2 {
+  position: relative; /* Set the position to relative */
+  top: 200px; /* Adjust the top position as needed */
+  left: -590px; /* Adjust the left position as needed */
+}
+
+.image-text p3 {
+  position: relative; /* Set the position to relative */
+  top: 200px; /* Adjust the top position as needed */
+  left: -590px; /* Adjust the left position as needed */
+}
+
