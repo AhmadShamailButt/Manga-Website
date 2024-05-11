@@ -14,8 +14,6 @@
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br><br>
         
-        <label for="userType">User Type:</label>
-        <input type="text" id="userType" name="userType" required><br><br>
         
         <label for="age">Age:</label>
         <input type="number" id="age" name="age" required><br><br>
@@ -31,12 +29,10 @@
                 const formData = new FormData(this);
                 const UserName = formData.get("username");
                 const Password = formData.get("password");
-                const UserType = formData.get("userType");
                 const Age = parseInt(formData.get("age")); // Convert age to integer
-                
-                
+
                 // Send request to server to create the user
-                const response2 = await fetch('/executeQuery', {
+                const response1 = await fetch('/executeQuery', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -44,16 +40,34 @@
                     body: JSON.stringify({sql: `exec spCreateUser @Username='${UserName}', @Password='${Password}', @UserType='${UserType}', @Age=${Age}`})
                 });
 
-                if (!response2.ok) {
+                if (!response1.ok) {
                     throw new Error('Failed to create user on server.');
                 }
 
-                const responseData = await response2.json();
-                if (responseData.success) {
-                    document.getElementById("responseMessage").innerText = 'User created successfully.';
-                } else {
-                    throw new Error(`Failed to create user: ${responseData.error}`);
+                const responseData1 = await response1.json();
+                if (!responseData1.success) {
+                    throw new Error(`Failed to create user: ${responseData1.error}`);
                 }
+
+                // Send request to server to create the user profile
+                const response2 = await fetch('/executeQuery', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({sql: `exec spCreateUserProfile @FullName='${UserName}'`})
+                });
+
+                if (!response2.ok) {
+                    throw new Error('Failed to create user profile on server.');
+                }
+
+                const responseData2 = await response2.json();
+                if (!responseData2.success) {
+                    throw new Error(`Failed to create user profile: ${responseData2.error}`);
+                }
+
+                document.getElementById("responseMessage").innerText = 'User and user profile created successfully.';
             } catch (error) {
                 console.error(error);
                 document.getElementById("responseMessage").innerText = error.message;
