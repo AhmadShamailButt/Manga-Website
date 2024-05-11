@@ -24,7 +24,7 @@ app.post('/executeQuery', async (req, res) => {
 
 // Serve the HTML form for user registration
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/mangaSearch.html');
+    res.sendFile(__dirname + '/addUserFav.html');
 });
 app.use(express.static('project'));
 

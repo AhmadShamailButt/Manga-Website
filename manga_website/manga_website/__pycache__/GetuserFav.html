@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Fav</title>
+</head>
+<body>
+    <h1>User Fav</h1>
+    <form id="FavForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <button type="submit">Get Wishlist</button>
+    </form>
+
+    <div id="FavWishlist"></div>
+    
+
+    <script>
+        document.getElementById("FavForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            try {
+                const formData = new FormData(this);
+                const username = formData.get("username");
+
+                // Send request to server to get manga names from user's wishlist
+                const userResponse = await fetch('/executeQuery', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({sql: `exec GetMangaNamesFromFav @username='${username}'`})
+                });
+
+                if (!userResponse.ok) {
+                    throw new Error('Failed to retrieve user Fav from server.');
+                }
+
+                const userData = await userResponse.json();
+                console.log(userData); // Log response for inspection
+
+                if (userData.success && userData.rows.length > 0) {
+                    const userFavDiv = document.getElementById("FavWishlist"); // Corrected typo here
+                    userFavDiv.innerHTML = "<h2>User Fav</h2>";
+                    const ul = document.createElement("ul");
+                    userData.rows.forEach(row => {
+                        const li = document.createElement("li");
+                        li.textContent = row.title;
+                        ul.appendChild(li);
+                    });
+                    userFavDiv.appendChild(ul);
+                } else {
+                    throw new Error('No manga found in the user Fav.');
+                }
+            } catch (error) { // Removed an extra }
+                console.error(error);
+                document.getElementById("FavWishlist").innerHTML = "<p>Error: " + error.message + "</p>"; // Corrected typo here
+            }
+        });
+    </script>
+</body>
+</html>
