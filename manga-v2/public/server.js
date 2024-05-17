@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 5000;
 app.use(bodyParser.json());
 
 // Initialize DatabaseManager with the connection string
-const connectionString = "Driver={SQL Server};Server=NOONE\\SQLEXPRESS07;Database=manga;Trusted_Connection=yes;";
+const connectionString = "Driver={SQL Server};Server=Yourservername;Database=manga;Trusted_Connection=yes;";
 const dbManager = new DatabaseManager(connectionString);
 
 // API endpoint to execute a query
