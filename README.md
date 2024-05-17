@@ -1,3 +1,0 @@
-# Manga-Website
-
-Mange Project 
